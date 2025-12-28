@@ -7,15 +7,14 @@ import QtQuick
 
 import qs.config
 import qs.services
+import qs.components
 
 Rectangle {
     id: root
 
-    property bool isEmpty: popupList.count == 0
-
     color: "transparent"
 
-    implicitHeight: viewport.implicitHeight
+    implicitHeight: rollingList.implicitHeight
     implicitWidth: {
         let size = Appearance.elementSize.notificationListItem_width;
         let h_pad = Appearance.padding.md;
@@ -31,7 +30,7 @@ Rectangle {
         id: viewport
         clip: true
 
-        property real animatedHeight: popupList.contentHeight
+        property real animatedHeight
 
         color: Appearance.colors.primary
         bottomLeftRadius: Appearance.rounding.normal
@@ -43,7 +42,7 @@ Rectangle {
         implicitHeight: animatedHeight
 
         ListView {
-            id: popupList
+            id: rollingList
 
             model: popups
             anchors.fill: parent
@@ -88,12 +87,21 @@ Rectangle {
                 value: -popup.height
             }
 
-            NumberAnimation {
-                target: t
-                property: "y"
-                to: 0
-                duration: 400
-                easing.type: Easing.OutQuad
+            ParallelAnimation {
+                NumberAnimation {
+                    target: t
+                    property: "y"
+                    to: 0
+                    duration: 400
+                    easing.type: Easing.OutQuad
+                }
+                NumberAnimation {
+                    target: viewport
+                    property: "animatedHeight"
+                    to: rollingList.contentHeight
+                    duration: 400
+                    easing.type: Easing.OutQuad
+                }
             }
         }
 
@@ -118,7 +126,7 @@ Rectangle {
                 NumberAnimation {
                     target: viewport
                     property: "animatedHeight"
-                    to: viewport.animatedHeight - popup.implicitHeight - popupList.spacing
+                    to: viewport.animatedHeight - popup.implicitHeight - rollingList.spacing
                     duration: 400
                     easing.type: Easing.OutQuad
                 }
