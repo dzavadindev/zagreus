@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
+
 import qs.config
 import qs.components
 
@@ -10,8 +11,14 @@ Item {
     property bool expanded: false
     property real reveal: expanded ? expandedWidth : 0
     readonly property int slotWidth: Config.trayIconSize + Appearance.padding.sm * 2
-    readonly property real expandedWidth: Math.max(1, Config.trayMaxVisibleIcons) * slotWidth
+    readonly property real expandedWidth: {
+        const currentItems = SystemTray.items.values.length
+        if (currentItems < Config.trayMaxVisibleIcons)
+            return currentItems * slotWidth
+        return Math.max(1, Config.trayMaxVisibleIcons) * slotWidth
+    }
     readonly property real ribbonWidth: 20
+
     implicitWidth: ribbonWidth + Math.max(0, reveal)
     implicitHeight: Config.trayIconSize + Appearance.padding.sm
 
@@ -34,19 +41,23 @@ Item {
     // The right edge stays fixed in the bar row; dragging the handle left reveals icons.
     MouseArea {
         id: handle
+
+        property real pressX: 0
+        property real initialReveal: 0
+        property bool moved: false
+
         width: root.ribbonWidth
         height: parent.height
         hoverEnabled: true
         cursorShape: Qt.SizeHorCursor
-        property real pressX: 0
-        property real initialReveal: 0
-        property bool moved: false
+
         onPressed: mouse => {
             pressX = mapToGlobal(mouse.x, mouse.y).x;
             initialReveal = root.reveal;
             moved = false;
             menu.close();
         }
+
         onPositionChanged: mouse => {
             if (!pressed)
                 return;
@@ -56,17 +67,19 @@ Item {
             if (moved)
                 root.reveal = Math.max(0, Math.min(root.expandedWidth, initialReveal + delta));
         }
+
         onReleased: {
             root.expanded = moved ? root.reveal >= root.expandedWidth / 2 : !root.expanded;
             root.reveal = Qt.binding(() => root.expanded ? root.expandedWidth : 0);
         }
+
         onCanceled: root.reveal = Qt.binding(() => root.expanded ? root.expandedWidth : 0)
 
         MaterialIcon {
             anchors.centerIn: parent
             name: root.expanded ? "chevron_right" : "chevron_left"
             size: 18
-            color: handle.containsMouse ? Appearance.colors.secondary : Appearance.colors.tertiary_contrast
+            color: handle.containsMouse ? Appearance.colors.tertiary_contrast : Appearance.colors.secondary
         }
     }
 
