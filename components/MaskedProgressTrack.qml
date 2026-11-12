@@ -1,5 +1,4 @@
 import QtQuick
-import Qt5Compat.GraphicalEffects
 
 Item {
     id: root
@@ -23,31 +22,16 @@ Item {
     }
 
     Item {
-        id: fillSource
-        anchors.fill: parent
-        visible: false
+        width: root.width * root.clampedProgress
+        height: root.height
+        clip: true
 
+        // Reveal a full-size rounded track so the moving edge stays straight.
         Rectangle {
-            width: parent.width
-            height: parent.height
-            x: (root.clampedProgress - 1) * parent.width
-
+            width: root.width
+            height: root.height
+            radius: root.radius
             color: root.fillColor
         }
-    }
-
-    Rectangle {
-        id: fillMask
-        anchors.fill: parent
-
-        visible: false
-        radius: root.radius
-        color: "white"
-    }
-
-    OpacityMask {
-        anchors.fill: parent
-        source: fillSource
-        maskSource: fillMask
     }
 }

@@ -98,8 +98,8 @@ Rectangle {
         required property var modelData
 
         color: "transparent"
-        implicitHeight: name.implicitHeight + slider.implicitHeight + Appearance.padding.sm
-        implicitWidth: slider.implicitWidth
+        implicitHeight: name.implicitHeight + volumeControl.implicitHeight + Appearance.padding.sm
+        implicitWidth: volumeControl.implicitWidth
 
         PW.PwObjectTracker {
             id: binder
@@ -112,13 +112,13 @@ Rectangle {
             MarqueeText {
                 id: name
 
-                maxWidth: slider.implicitWidth
+                maxWidth: volumeControl.implicitWidth
 
                 text: AudioService.getNodeName(audio_element.modelData)
             }
 
             VolumeSlider {
-                id: slider
+                id: volumeControl
 
                 node: audio_element.modelData
                 category: root.category

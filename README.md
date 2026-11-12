@@ -15,6 +15,13 @@ This is my shell :D
   - Other shared widgets: icons, list helpers, window wrappers.
 - `services/`: App state and system integrations (`OverlayManager`, `WMService`, `AudioService`, `TimeService`, `PowerService`, `NotificationService`).
 - `config/`: Shared design/config constants.
+- `tests/`: Standalone Qt Quick tests (`tst_*.qml`).
+
+## Testing
+
+Run `make test` from this directory for the headless Qt 6 test suite. To check rendering against a running Wayland compositor, run `make test-wayland`. Both targets discover test files under `tests/`; run one file with `make test TEST_INPUT=tests/tst_MaskedProgressTrack.qml`. Install Qt 6 Quick Test; if its runner is elsewhere, pass `QMLTESTRUNNER=/path/to/qmltestrunner` to `make`.
+
+The standalone runner cannot load Quickshell's bundled `Quickshell.Widgets` plugin, so tests cover the reusable Qt Quick track/handle and pointer behavior; rounded clipping and the complete PipeWire-backed mixer still need an in-shell visual check.
 
 ## Implementation Details
 
