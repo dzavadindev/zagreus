@@ -28,13 +28,14 @@ Item {
     }
 
     Behavior on reveal {
-        enabled: !handle.pressed
-        SpringAnimation { spring: 4; damping: 0.32; epsilon: 0.1 }
+        SmoothedAnimation {
+            velocity: 600
+            reversingMode: SmoothedAnimation.Eased
+        }
     }
 
     Rectangle {
         anchors.fill: parent
-        radius: Appearance.padding.xs
         color: Appearance.colors.primary_light
     }
 
@@ -68,12 +69,20 @@ Item {
                 root.reveal = Math.max(0, Math.min(root.expandedWidth, initialReveal + delta));
         }
 
-        onReleased: {
-            root.expanded = moved ? root.reveal >= root.expandedWidth / 2 : !root.expanded;
+        onReleased: mouse => {
+            const delta = pressX - mapToGlobal(mouse.x, mouse.y).x;
+            if (moved || Math.abs(delta) > 4) {
+                if (delta !== 0)
+                    root.expanded = delta > 0;
+            } else {
+                root.expanded = !root.expanded;
+            }
             root.reveal = Qt.binding(() => root.expanded ? root.expandedWidth : 0);
         }
 
-        onCanceled: root.reveal = Qt.binding(() => root.expanded ? root.expandedWidth : 0)
+        onCanceled: {
+            root.reveal = Qt.binding(() => root.expanded ? root.expandedWidth : 0)
+        }
 
         MaterialIcon {
             anchors.centerIn: parent

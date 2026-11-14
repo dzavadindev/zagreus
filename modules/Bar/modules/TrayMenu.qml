@@ -14,7 +14,7 @@ PopupWindow {
     visible: false
     color: "transparent"
     grabFocus: true
-    implicitWidth: 300
+    implicitWidth: 250
     implicitHeight: Math.min(440, Math.max(80, (currentPage ? currentPage.contentHeight : 0) + 40 + (menuStack.length > 1 ? 36 : 0)))
 
     function open(item) {
